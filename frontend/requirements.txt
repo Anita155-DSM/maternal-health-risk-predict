@@ -1,4 +1,9 @@
+# Frontend - Aplicación web interactiva
 streamlit>=1.38,<1.51
+
+# peticiones HTTP
 requests>=2.31,<3.0
+
+# Data manipulation y visualization
 pandas>=2.0,<2.4
 plotly>=5.20,<6.1

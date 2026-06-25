@@ -1,5 +1,11 @@
+# Backend - API con FastAPI
 fastapi>=0.115,<0.140
 uvicorn[standard]>=0.34,<0.50
+
+# Machine Learning
 scikit-learn>=1.6,<1.9
 joblib>=1.4,<1.6
+numpy>=1.24,<2.0
+
+# Data validation
 pydantic>=2.10,<2.14

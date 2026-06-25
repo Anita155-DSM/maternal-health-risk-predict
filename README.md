@@ -46,52 +46,117 @@ La salida del modelo no reemplaza un criterio médico. La idea es mostrar una pr
 
 Si vas a levantar el proyecto desde cero, seguí estos pasos:
 
-1. Cloná o abrí el repositorio en tu máquina.
-2. Creá un entorno virtual de Python.
-3. Instalá las dependencias del backend y del frontend.
-4. Ejecutá el notebook de entrenamiento si necesitás regenerar el modelo.
-5. Levantá primero el backend y después el frontend.
+### Requisitos previos
+- Python 3.9 o superior
+- pip
+- Git (opcional, si clonas el repo)
 
-## Requisitos
+### Pasos de instalación
 
-- Python 3.10 o superior
-- `pip`
-- Dependencias del backend y del frontend instaladas en el entorno virtual
-
-## Instalación de dependencias
-
-Desde la raíz del proyecto:
-
+#### 1. Cloná o abrí el repositorio en tu máquina
 ```bash
-python -m venv .venv
-.venv\Scripts\activate
+git clone <url-del-repo>
+cd maternal-health-risk-predict
+```
+
+#### 2. Creá un entorno virtual de Python
+```bash
+# Windows
+python -m venv venv
+venv\Scripts\activate
+
+# Linux/Mac
+python3 -m venv venv
+source venv/bin/activate
+```
+
+#### 3. Instalá las dependencias
+
+Para instalar el proyecto completo:
+```bash
+pip install -r requirements.txt
+```
+
+O instalá componentes por separado:
+
+**Backend:**
+```bash
 pip install -r backend/requirements.txt
+```
+
+**Frontend:**
+```bash
 pip install -r frontend/requirements.txt
 ```
 
-Si preferís usar un único archivo de dependencias, podés instalar ambos requisitos en el mismo entorno virtual sin problema.
+#### 4. Ejecutá el notebook de entrenamiento
 
-## Ejecución del backend
+Abre `main.ipynb` en Jupyter y ejecuta todas las celdas para:
+- Explorar el dataset
+- Preprocesar los datos
+- Entrenar el árbol de decisión
+- Exportar el modelo a `backend/models/decision_tree_maternal_risk.pkl`
+- Generar métricas en `backend/models/metrics.json`
 
-El backend expone la API de predicción con FastAPI y carga el modelo almacenado en `backend/models/decision_tree_maternal_risk.pkl`.
+```bash
+jupyter notebook main.ipynb
+```
 
+#### 5. Levantá el backend (en una terminal)
+
+Desde la carpeta `backend/`:
 ```bash
 cd backend
 uvicorn main:app --reload
 ```
 
-Una vez levantado, la documentación interactiva queda disponible en:
+La API estará disponible en:
+- Base: `http://127.0.0.1:8000`
+- Documentación (Swagger): `http://127.0.0.1:8000/docs`
 
-- `http://127.0.0.1:8000/docs`
+#### 6. Levantá el frontend (en otra terminal)
 
-Endpoints principales:
+Desde la carpeta `frontend/`:
+```bash
+cd frontend
+streamlit run app.py
+```
 
-- `GET /`: estado general de la API.
-- `GET /health`: verificación de que el servidor y el modelo están cargados.
-- `POST /predict`: realiza una predicción con los datos del paciente.
+La aplicación web abrirá automáticamente en `http://localhost:8501`
 
-### Ejemplo de request a `/predict`
+## Stack Tecnológico
 
+### Backend
+- **FastAPI**: Framework web moderno y de alto rendimiento
+- **Uvicorn**: Servidor ASGI
+- **scikit-learn**: Algoritmo de árbol de decisión
+- **Joblib**: Serialización del modelo entrenado
+- **Pydantic**: Validación de datos
+
+### Frontend
+- **Streamlit**: Framework para crear aplicaciones web de datos
+- **Plotly**: Visualizaciones interactivas
+- **Pandas**: Manipulación de datos
+- **Requests**: Comunicación HTTP con la API
+
+### Notebook
+- **Pandas**: Exploración y manipulación de datos
+- **Matplotlib** y **Seaborn**: Visualizaciones
+- **scikit-learn**: Entrenamiento del modelo
+- **Numpy**: Cálculos numéricos
+
+## Endpoints de la API
+
+### GET `/`
+Estado general de la API.
+
+### GET `/health`
+Verifica que el servidor y el modelo están operativos.
+
+### POST `/predict`
+Realiza una predicción de riesgo.
+
+**Parámetros (JSON):**
 ```json
 {
   "Age": 28,
@@ -103,49 +168,24 @@ Endpoints principales:
 }
 ```
 
-## Ejecución del frontend
-
-La interfaz web está hecha en Streamlit y consume la API del backend.
-
-En otra terminal, desde la carpeta `frontend`:
-
-```bash
-cd frontend
-streamlit run app.py
+**Respuesta:**
+```json
+{
+  "prediccion": 1,
+  "riesgo": "Riesgo Medio",
+  "probabilidades": {
+    "Riesgo Bajo": 0.3333,
+    "Riesgo Medio": 0.3333,
+    "Riesgo Alto": 0.3334
+  }
+}
 ```
 
-Por defecto, el frontend intenta conectarse a:
+## Notas Importantes
 
-- `http://127.0.0.1:8000`
+- El modelo se exporta desde el notebook en formato `.pkl` (joblib).
+- Asegurate de que el archivo `backend/models/decision_tree_maternal_risk.pkl` exista antes de levantar el backend.
+- El frontend espera que el backend esté corriendo en `http://127.0.0.1:8000` por defecto. Podés cambiar esto con la variable de entorno `API_URL`.
+- La API devuelve probabilidades para cada clase de riesgo, no solo la predicción más probable.
 
-Si necesitás cambiar la URL de la API, definí la variable de entorno `API_URL` antes de ejecutar Streamlit.
 
-## Flujo recomendado de uso
-
-1. Iniciá el backend.
-2. Verificá que `http://127.0.0.1:8000/health` responda correctamente.
-3. Abrí el frontend con Streamlit.
-4. Ingresá los signos vitales del paciente.
-5. Observá la predicción y las probabilidades estimadas por el modelo.
-
-## Notas técnicas
-
-- El modelo se carga una sola vez al iniciar el backend para evitar leerlo del disco en cada request.
-- El frontend usa CORS habilitado en la API para permitir la comunicación entre ambas aplicaciones.
-- Si el archivo del modelo no existe en `backend/models/`, primero hay que volver a ejecutar el notebook de entrenamiento y exportarlo.
-
-## Resultado esperado
-
-Al ejecutar el proyecto, deberías poder:
-
-- consultar la API desde Swagger
-- enviar datos clínicos simples
-- recibir una clasificación de riesgo materno
-- visualizar el resultado desde la interfaz web
-
-## Posibles mejoras futuras
-
-- probar otros modelos como Random Forest o XGBoost
-- balancear mejor las clases del dataset
-- agregar validaciones y mensajes de error más detallados
-- guardar un historial de predicciones
