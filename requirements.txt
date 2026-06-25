@@ -1,0 +1,29 @@
+# Maternal Health Risk - Todas las dependencias del proyecto
+# Instalar con: pip install -r requirements.txt
+
+# BACKEND - API con FastAPI
+fastapi>=0.115,<0.140
+uvicorn[standard]>=0.34,<0.50
+pydantic>=2.10,<2.14
+
+
+# FRONTEND - Aplicación web interactiva
+streamlit>=1.38,<1.51
+requests>=2.31,<3.0
+
+# DATA SCIENCE - Herramientas comunes
+numpy>=1.24,<2.0
+pandas>=2.0,<2.4
+plotly>=5.20,<6.1
+
+# MACHINE LEARNING
+scikit-learn>=1.6,<1.9
+joblib>=1.4,<1.6
+
+# VISUALIZACIÓN (para notebooks)
+matplotlib>=3.7,<3.10
+seaborn>=0.13,<0.14
+
+# JUPYTER (para ejecutar notebooks)
+jupyter>=1.0,<2.0
+ipykernel>=6.29,<7.0
