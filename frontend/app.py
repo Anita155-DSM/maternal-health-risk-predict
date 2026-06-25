@@ -65,7 +65,7 @@ with tab_prediccion:
         }
 
         try:
-            respuesta = requests.post(f"{API_URL}/predict", json=payload, timeout=10)
+            respuesta = requests.post(f"{API_URL}/predict", json=payload, timeout=90)
             respuesta.raise_for_status()
             resultado = respuesta.json()
 
